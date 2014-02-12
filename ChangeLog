@@ -1,3 +1,333 @@
+2012-06-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in, NEWS:
+	=== Version 0.1.18 ===
+
+2012-06-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-lang-ethnic.txt:
+	* data/tdict-proper.txt: Add words.
+
+2012-06-11  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-std.txt: Remove some prefix-words as found during
+	  working on thailatex hyphenation.
+
+2012-06-10  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-ict.txt: Add words.
+
+2012-06-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Belated post-release version suffix added.
+
+2012-06-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-spell.txt: Add words.
+
+2012-03-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-std-compound.txt, data/tdict-std.txt: Fix typos.
+
+2012-02-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt: Add words.
+
+2012-02-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in, NEWS:
+	=== Version 0.1.17 ===
+
+2012-02-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Bump library revision, due to code change.
+
+2012-02-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* tests/test_thbrk.c, tests/test_thwbrk.c: Add acronym to the tests.
+
+2012-02-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-common.txt: Add words.
+
+2012-02-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* src/thbrk/thbrk.c (th_brk): Do not break last Thai chunk with
+	dictionary if it's acronym.
+
+2012-02-14  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-common.txt: Add words.
+
+	* data/tdict-geo.txt: Fix typo.
+
+2012-02-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-district.txt:
+	* data/tdict-common.txt: Add words.
+
+2012-02-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* src/thbrk/thbrk.c (th_brk): Handle Thai acronyms by detecting
+	groups of <= 3 Thai characters + '.'. Thanks John Tapsell for
+	the report and initial patch.
+
+2012-02-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* src/thrend/thrend.c (th_render_cell_): Reformat source a little bit.
+
+2012-01-18  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-common.txt: Add words.
+
+	* data/tdic-proper.txt, data/tdict-history.txt: Move "ศรีวิชัย" to
+	-history.
+
+2012-01-18  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in, NEWS:
+	=== Version 0.1.16 ===
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in:
+	  - Remove remaining '$Id'.
+	  - Remove unnecessary AC_SUBST(VERSION).
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* -TODO: Removed, the plan is obsolete.
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* README: Update project URL & e-mail.
+	* configure.in: Use googlegroups as bug report address.
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Add bug report address.
+
+2011-11-05  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-common.txt: Add words.
+
+	* data/tdict-country.txt: Use more popular short name for Saudi Arabia.
+
+2011-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt, data/tdict-city.txt: "ไดฟุกุ" is city name.
+
+2011-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-science.txt:
+	* data/tdict-common.txt: Add words.
+
+2011-09-03  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-common.txt: Add words.
+
+	* data/tdict-std.txt: Remove "มาย" which is rare but can potentially
+	cause ambiguity (e.g. "มายกร่าง"). A valid compound, "เมามาย" is
+	already in tdict-std-compound.txt.
+
+2011-07-19  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-common.txt: Add words.
+
+	* data/tdict-std-compound.txt: Remove loose compound.
+
+	* data/tdict-std.txt:
+	  - Remove rare words which potentially cause ambiguities.
+	  - Remove a duplicated entry.
+
+2011-06-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-common.txt:
+	* data/tdict-lang-ethnic.txt: Add words.
+
+2011-06-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
+2011-03-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in, NEWS:
+	=== Version 0.1.15 ===
+
+2011-03-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-district.txt:
+	* data/tdict-common.txt: Add words.
+
+2011-03-22  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-district.txt:
+	* data/tdict-common.txt: Add words.
+
+2011-03-22  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-district.txt:
+	Move 2 names from proper, district to history.
+
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-district.txt:
+	* data/tdict-common.txt: Add words.
+
+2011-03-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-district.txt:
+	* data/tdict-history.txt:
+	Move "หริภุญชัย" from district to history list.
+
+	* data/tdict-city.txt:
+	Change "ฟูกุโอกะ" to "ฟูกูโอกะ", which is statistically more popular.
+
+	* data/tdict-history.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-spell.txt:
+	* data/tdict-common.txt:
+	Add words.
+
+2011-03-15  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Split historical names out of tdict-city.txt and tdict-district.txt.
+
+	* data/Makefile.am:
+	* +data/tdict-history.txt:
+	* data/tdict-city.txt:
+	* data/tdict-district.txt:
+	Split historical names into tdict-history.txt.
+
+	* data/tdict-city.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-lang-ethnic.txt:
+	Move 2 names from tdict-city.txt to tdict-geo.txt and
+	tdict-lang-ethnic.txt.
+
+2011-03-15  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Split tdict-country.txt and tdict-city.txt out of tdict-geo.txt
+	and let tdict-geo.txt keeps only geographical names.
+
+	* data/Makefile.am:
+	* +data/tdict-country.txt:
+	* +data/tdict-city.txt:
+	* data/tdict-geo.txt:
+	  - Split country names into tdict-country.txt
+	  - Split city names into tdict-city.txt
+
+	* data/tdict-geo.txt:
+	* data/tdict-lang-ethnic.txt:
+	  - Split language/etchnic names into tdict-lang-ethnic.txt
+
+2011-03-15  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-proper.txt:
+	* data/tdict-common.txt:
+	* data/tdict-geo.txt: Add words.
+
+2011-03-14  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-spell.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-common.txt:
+	* data/tdict-geo.txt: Add words.
+
+2011-03-09  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-ict.txt:
+	* data/tdict-district.txt:
+	* data/tdict-common.txt:
+	* data/tdict-science.txt: Add words.
+
+2010-12-27  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Adjust dictionary, as per Widhaya's feedback:
+	http://groups.google.com/group/thai-linux-foss-devel/browse_thread/
+	thread/986f74d786c9bace
+
+	* data/tdict-std-compound.txt:
+	* data/tdict-std-common.txt:
+	  - Remove some compounds that may cause potential ambiguities.
+	* data/tdict-spell.txt:
+	* data/tdict-common.txt:
+	  - Add words.
+
+2010-12-23  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-{common,geo}.txt: Add words.
+
+2010-05-17  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-{district,common,science}.txt: Add words.
+
+2010-03-14  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
+	Turn off manpages generation
+	* doc/Doxyfile.in: Turn GENERATE_MAN off.
+	* doc/Makefile.am: Remove man targets.
+
 2010-02-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* configure.in: Bump library revision.
