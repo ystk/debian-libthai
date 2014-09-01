@@ -19,17 +19,24 @@
  */
 
 /*
- * thbrk-private.h - Private header for thbrk module
+ * brk-common.h - Common code for word break backends
  * Created: 2008-12-23
  * Author:  Theppitak Karoonboonyanan <thep@linux.thai.net>
  */
 
-#ifndef __THBRK_PRIVATE_H
-#define __THBRK_PRIVATE_H
+#ifndef __BRK_COMMON_H
+#define __BRK_COMMON_H
 
-void    thbrk_on_unload ();
+#include <thai/thctype.h>
+#include <datrie/trie.h>
 
-#endif  /* __THBRK_PRIVATE_H */
+void    brk_on_unload ();
+
+Trie *  brk_get_dict ();
+
+void    brk_brkpos_hints (const thchar_t *str, int len, char *hints);
+
+#endif  /* __BRK_COMMON_H */
 
 /*
 vi:ts=4:ai:expandtab

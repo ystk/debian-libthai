@@ -2,21 +2,26 @@
 
 AC_PREREQ(2.50)
 
-AC_INIT(include/thai/thailib.h)
-AM_INIT_AUTOMAKE(libthai, 0.1.18, thai-linux-foss-devel@googlegroups.com)
+AC_INIT(libthai, 0.1.21, thai-linux-foss-devel@googlegroups.com)
+AC_CONFIG_SRCDIR([include/thai/thailib.h])
+AC_CONFIG_MACRO_DIR([m4])
+
+AM_INIT_AUTOMAKE(dist-xz no-dist-gzip)
 
 # Library versioning
 # Library code modified:                    REVISION++
 # Interfaces added:              CURRENT++  REVISION=0  AGE++
 # Interfaces changed/removed:    CURRENT++  REVISION=0  AGE=0
-LT_CURRENT=1
-LT_REVISION=7
-LT_AGE=1
+LT_CURRENT=2
+LT_REVISION=0
+LT_AGE=2
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 AC_CONFIG_MACRO_DIR([m4])
+
+DOXYGEN_REQ_VER=1.8.4
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -81,6 +86,15 @@ if test "x$enable_doxygen_doc" = "xyes"; then
   AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,no)
   if test "x$DOXYGEN" = "xno"; then
     enable_doxygen_doc="no"
+  else
+    AC_MSG_CHECKING([doxygen >= $DOXYGEN_REQ_VER])
+    DOXYGEN_VER=$($DOXYGEN --version)
+    if expr $DOXYGEN_VER \< $DOXYGEN_REQ_VER > /dev/null; then
+      AC_MSG_RESULT([$DOXYGEN_VER, no, documentation disabled])
+      enable_doxygen_doc="no"
+    else
+      AC_MSG_RESULT([$DOXYGEN_VER, yes])
+    fi
   fi
 fi
 

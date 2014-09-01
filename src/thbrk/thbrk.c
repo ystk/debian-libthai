@@ -30,17 +30,10 @@
 #include <thai/tis.h>
 #include <thai/thctype.h>
 #include <thai/thbrk.h>
-#include "thbrk-private.h"
 #include "brk-ctype.h"
 #include "brk-maximal.h"
 
 #define MAX_ACRONYM_FRAG_LEN  3
-
-void
-thbrk_on_unload ()
-{
-    brk_maximal_on_unload ();
-}
 
 /**
  * @brief  Insert word delimitors in given string

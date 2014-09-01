@@ -27,15 +27,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <limits.h>
 #include <datrie/trie.h>
 #include <thai/tis.h>
-#include <thai/thctype.h>
 #include <thai/thwchar.h>
 #include "brk-maximal.h"
-
-#define DICT_NAME   "thbrk"
+#include "brk-common.h"
 
 /**
  * @brief Break shot
@@ -68,6 +65,7 @@ static void         brk_pool_allocator_use ();
 static void         brk_pool_allocator_clear ();
 
 static BrkPool *    brk_pool_node_new (const BrkShot *shot);
+static void         brk_pool_node_free (BrkPool *pool);
 
 static void         brk_pool_free (BrkPool *pool);
 static BrkPool *    brk_pool_get_node (BrkPool *pool);
@@ -102,100 +100,19 @@ typedef struct {
  *   PRIVATE METHODS DECLARATIONS   *
  *----------------------------------*/
 
-static void         th_brkpos_hints (const thchar_t *str, int len, char *hints);
-
-static Trie *       brk_get_dict ();
-
 static BrkPool *    brk_root_pool (int pos_size);
 static int          brk_maximal_do_impl (const thchar_t *s, int len,
                                          const char *brkpos_hints,
                                          int pos[], size_t n);
 static int          brk_recover_try (const thchar_t *s, int len,
                                      const char *brkpos_hints,
-                                     int pos[], size_t n);
+                                     size_t recov_words, int *last_brk_pos);
 static int          brk_recover (const thchar_t *text, int len, int pos,
                                  const char *brkpos_hints, RecovHist *rh);
-
-static void
-th_brkpos_hints (const thchar_t *str, int len, char *hints)
-{
-    int  i;
-
-    if (len < 0)
-        len = strlen ((const char *)str);
-
-    memset (hints, 0, len);
-
-    for (i = 0; i < len; /* nop */) {
-        if (th_isthcons (str[i])) {
-            if (i+1 < len && str[i+1] == TIS_THANTHAKHAT) {
-                i += 2; /* the cons + THANTHAKHAT */
-            } else if (i+2 < len && str[i+2] == TIS_THANTHAKHAT) {
-                i += 3; /* the cons + intermediate char + THANTHAKHAT */
-            } else if (i+2 < len
-                       && str[i] != TIS_KO_KAI && str[i+1] == TIS_MAITAIKHU
-                       && (str[i+2] == TIS_O_ANG || str[i+2] == TIS_WO_WAEN))
-            {
-                hints[i] = 1;
-                i += 4; /* the cons + MAITAIKHU + OANG/WOWAEN + cons */
-            } else if ((i > 0
-                        && (str[i-1] == TIS_MAI_HAN_AKAT
-                            || str[i-1] == TIS_SARA_UEE))
-                       || (i > 1 && th_isthtone (str[i-1])
-                           && (str[i-2] == TIS_MAI_HAN_AKAT
-                               || str[i-2] == TIS_SARA_UEE)))
-            {
-                i++;
-            } else {
-                hints[i++] = 1;
-            }
-        } else if (str[i] == TIS_SARA_E || str[i] == TIS_SARA_AE) {
-            hints[i] = 1; /* sara e/ae */
-            i += 2; /* sara e/ae + the supposedly cons */
-            if (i >= len)
-                break;
-            if (str[i] == TIS_MAITAIKHU) {
-                i += 2; /* MAITAIKHU + the supposedly cons */
-            } else if (th_isupvowel (str[i])) {
-                i++; /* the upper vowel, as part of composite vowel */
-                if (i < len && th_isthtone (str[i]))
-                    i++;
-                i++; /* the supposedly cons */
-            } else if (i+2 < len
-                       && ((str[i+1] == TIS_SARA_AA && str[i+2] == TIS_SARA_A)
-                            || (str[i] != TIS_KO_KAI
-                                && str[i+1] == TIS_MAITAIKHU
-                                && str[i+2] != TIS_O_ANG
-                                && str[i+2] != TIS_WO_WAEN)))
-            {
-                i += 3; /* 2nd cons + SARA_AA + SARA_A, or
-                         * 2nd cons + MAITAIKHU + final cons
-                         */
-            }
-        } else if (th_isldvowel (str[i])) {
-            hints[i] = 1; /* the ldvowel */
-            i += 2; /* the ldvowel + the supposedly cons */
-        } else if (str[i] == TIS_RU || str[i] == TIS_LU) {
-            hints[i++] = 1;
-        } else {
-            i++;
-        }
-    }
-}
 
 /*---------------------*
  *   PRIVATE GLOBALS   *
  *---------------------*/
-static Trie *brk_dict = 0;
-
-void
-brk_maximal_on_unload ()
-{
-    if (brk_dict) {
-        trie_free (brk_dict);
-    }
-}
-
 void
 brk_maximal_init ()
 {
@@ -215,7 +132,7 @@ brk_maximal_do (const thchar_t *s, int len, int pos[], size_t n)
     int          ret;
 
     brkpos_hints = (char *) malloc (len);
-    th_brkpos_hints (s, len, brkpos_hints);
+    brk_brkpos_hints (s, len, brkpos_hints);
 
     ret = brk_maximal_do_impl (s, len, brkpos_hints, pos, n);
 
@@ -347,13 +264,13 @@ brk_maximal_do_impl (const thchar_t *s, int len,
 static int
 brk_recover_try (const thchar_t *s, int len,
                  const char *brkpos_hints,
-                 int pos[], size_t n)
+                 size_t recov_words, int *last_brk_pos)
 {
     BrkPool     *pool;
     BrkPool     *node;
     int          ret;
 
-    pool = brk_root_pool (n);
+    pool = brk_root_pool (recov_words);
     ret = 0;
 
     while (NULL != (node = brk_pool_get_node (pool))) {
@@ -363,31 +280,30 @@ brk_recover_try (const thchar_t *s, int len,
 
         /* walk dictionary character-wise till a word is matched */
         is_keep_node = 1;
-        do {
-            if (!trie_state_walk (shot->dict_state,
-                                  th_tis2uni (s[shot->str_pos++])))
-            {
-                is_terminal = 0;
-                is_keep_node = 0;
-                break;
-            }
-
-            is_terminal = trie_state_is_terminal (shot->dict_state);
-            if (shot->str_pos >= len) {
-                if (!is_terminal) {
+        for (;;) {
+            do {
+                if (!trie_state_walk (shot->dict_state,
+                                      th_tis2uni (s[shot->str_pos++])))
+                {
                     is_keep_node = 0;
+                    break;
                 }
+
+                is_terminal = trie_state_is_terminal (shot->dict_state);
+                if (shot->str_pos >= len) {
+                    if (!is_terminal) {
+                        is_keep_node = 0;
+                    }
+                    break;
+                }
+            } while (!(is_terminal && brkpos_hints[shot->str_pos]));
+
+            if (!is_keep_node) {
+                pool = brk_pool_delete (pool, node);
                 break;
             }
-        } while (!(is_terminal && brkpos_hints[shot->str_pos]));
 
-        if (!is_keep_node) {
-            pool = brk_pool_delete (pool, node);
-            continue;
-        }
-
-        /* if node still kept, mark break position and rewind dictionary */
-        if (is_terminal) {
+            /* if node still kept, mark break position and rewind dictionary */
             if (shot->str_pos < len &&
                 !trie_state_is_single (shot->dict_state))
             {
@@ -399,26 +315,28 @@ brk_recover_try (const thchar_t *s, int len,
 
             trie_state_rewind (shot->dict_state);
             shot->brk_pos [shot->cur_brk_pos++] = shot->str_pos;
-        }
 
-        if (shot->str_pos == len || shot->cur_brk_pos == n) {
-            /* path is done; get result & remove it */
-            if (shot->cur_brk_pos > ret) {
-                ret = shot->cur_brk_pos;
-                memcpy (pos, shot->brk_pos, ret * sizeof (pos[0]));
-            }
-            pool = brk_pool_delete (pool, node);
-            /* stop as soon as first solution is found */
-            if (ret == n)
+            if (shot->str_pos == len || shot->cur_brk_pos == recov_words) {
+                /* path is done; get result & remove it */
+                if (shot->cur_brk_pos > ret) {
+                    ret = shot->cur_brk_pos;
+                    *last_brk_pos = shot->brk_pos[ret - 1];
+                }
+                pool = brk_pool_delete (pool, node);
+                /* stop as soon as first solution is found */
+                if (ret == recov_words)
+                    goto recov_done;
                 break;
-        } else {
-            /* find matched nodes, contest and keep the best one */
-            while (NULL != (match = brk_pool_match (pool, node))) {
-                pool = brk_pool_delete (pool, match);
+            } else {
+                /* find matched nodes, contest and keep the best one */
+                while (NULL != (match = brk_pool_match (pool, node))) {
+                    pool = brk_pool_delete (pool, match);
+                }
             }
         }
     }
 
+recov_done:
     brk_pool_free (pool);
     return ret;
 }
@@ -457,7 +375,7 @@ static int
 brk_recover (const thchar_t *text, int len, int pos,
              const char *brkpos_hints, RecovHist *rh)
 {
-    int brk_pos[RECOVERED_WORDS];
+    int last_brk_pos;
     int n, p;
 
     while (pos < len && !brkpos_hints[pos]) {
@@ -469,9 +387,9 @@ brk_recover (const thchar_t *text, int len, int pos,
     for (p = pos; p < len; ++p) {
         if (brkpos_hints[p]) {
             n = brk_recover_try (text + p, len - p, brkpos_hints + p,
-                                 brk_pos, RECOVERED_WORDS);
+                                 RECOVERED_WORDS, &last_brk_pos);
             if (n == RECOVERED_WORDS
-                || (n > 0 && '\0' == text[p + brk_pos[n-1]]))
+                || (n > 0 && '\0' == text[last_brk_pos]))
             {
                 rh->pos = pos;
                 rh->recov = p;
@@ -483,50 +401,13 @@ brk_recover (const thchar_t *text, int len, int pos,
     return -1;
 }
 
-static Trie *
-brk_get_dict ()
-{
-    static int is_dict_tried = 0;
-
-    if (!brk_dict && !is_dict_tried) {
-        const char *dict_dir;
-        char        path[512];
-
-        /* Try LIBTHAI_DICTDIR env first */
-        if (NULL != (dict_dir = getenv ("LIBTHAI_DICTDIR"))) {
-            snprintf (path, sizeof path, "%s/%s.tri", dict_dir, DICT_NAME);
-            brk_dict = trie_new_from_file (path);
-        }
-
-        /* Then, fall back to default DICT_DIR macro */
-        if (!brk_dict) {
-            brk_dict = trie_new_from_file (DICT_DIR "/" DICT_NAME ".tri");
-        }
-
-        if (!brk_dict) {
-            if (dict_dir) {
-                fprintf (stderr,
-                         "LibThai: Fail to open dictionary at '%s' and '%s'.\n",
-                         path, DICT_DIR "/" DICT_NAME ".tri");
-            } else {
-                fprintf (stderr,
-                         "LibThai: Fail to open dictionary at '%s'.\n",
-                         DICT_DIR "/" DICT_NAME ".tri");
-            }
-        }
-
-        is_dict_tried = 1;
-    }
-
-    return brk_dict;
-}
-
 static int
 brk_shot_init (BrkShot *dst, const BrkShot *src)
 {
     dst->dict_state = trie_state_clone (src->dict_state);
     dst->str_pos = src->str_pos;
-    if (!(dst->brk_pos = (int *) malloc (src->n_brk_pos * sizeof (int))))
+    dst->brk_pos = (int *) malloc (src->n_brk_pos * sizeof (int));
+    if (!dst->brk_pos)
         return -1;
     memcpy (dst->brk_pos, src->brk_pos, src->cur_brk_pos * sizeof (int));
     dst->n_brk_pos = src->n_brk_pos;
@@ -611,7 +492,7 @@ brk_pool_node_new (const BrkShot *shot)
 }
 
 static void
-brk_pool_free_node (BrkPool *pool)
+brk_pool_node_free (BrkPool *pool)
 {
     /* put it in free list for further reuse */
     pool->next = brk_pool_free_list;
@@ -625,7 +506,7 @@ brk_pool_free (BrkPool *pool)
         BrkPool *next;
 
         next = pool->next;
-        brk_pool_free_node (pool);
+        brk_pool_node_free (pool);
         pool = next;
     }
 }
@@ -701,7 +582,7 @@ brk_pool_delete (BrkPool *pool, BrkPool *node)
         if (p)
             p->next = node->next;
     }
-    brk_pool_free_node (node);
+    brk_pool_node_free (node);
 
     return pool;
 }
