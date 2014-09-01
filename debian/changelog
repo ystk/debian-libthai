@@ -1,3 +1,72 @@
+libthai (0.1.21-1) unstable; urgency=medium
+
+  * Simplify debian/rules.
+    No need to config arch and indep differently. Both need dictionary now.
+    - Merge config-{arch,indep}, reconf targets into single (and simple)
+      config.status target.
+    - Drop now-unneeded phonies.
+  * Imported Upstream version 0.1.21
+  * Drop patch taken from upstream
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Thu, 21 Aug 2014 12:21:39 +0700
+
+libthai (0.1.20-3) unstable; urgency=medium
+
+  * Fix arch-only FTBFS due to failure in test suite.
+    In build-arch target, dictionary should be built before test suite is run.
+    - debian/control: Move libdatrie1-bin from B-Dep-Indep to B-Dep.
+    - debian/rules: Configure with --enable-dict and also build data/ before
+      running checks.
+    (Closes: #735183)
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Tue, 14 Jan 2014 15:55:01 +0700
+
+libthai (0.1.20-2) unstable; urgency=medium
+
+  * Drop explicit rules for xz compression
+    dpkg-dev (>= 1.17.0) already does this by default.
+  * Declare libthai-dev M-A: same
+  * Bump Standards-Version to 3.9.5 (no changes)
+  * Update copyright years
+  * Run test suites after build
+  * Drop versioned B-Dep on libdatrie-dev.
+    Even squeeze version already satisfies it.
+  * Also drop versioned Dep on libdatrie-dev from libthai-dev
+  * Fix compiler warning in test suite
+    - debian/patches/01_test-thbrk-warning.patch: Taken from upstream to fix
+      warning in tests/test_thbrk.c.
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Sun, 12 Jan 2014 09:21:06 +0700
+
+libthai (0.1.20-1) unstable; urgency=low
+
+  * Use canonical anonscm URIs in Vcs-* fields.
+  * Imported Upstream version 0.1.20
+  * Fix null config/build stage on binary-* target
+    - debian/rules: Make *-stamp targets depend on other *-stamp targets
+      rather than on phony targets which made it effectively phony, too.
+  * debian/rules: Drop build-* from binary-* dependencies.
+    They are aleady transitive dependencies for install-* targets.
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Fri, 25 Oct 2013 15:52:38 +0700
+
+libthai (0.1.19-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Thu, 09 May 2013 23:09:51 +0700
+
+libthai (0.1.19-1) experimental; urgency=low
+
+  * Imported Upstream version 0.1.19
+  * debian/libthai0.symbols: Updated as per upstream.
+  * debian/rules: Replace configure.in referrals with configure.ac.
+  * debian/copyright: Update copyright years.
+  * debian/watch: Watch upstream .tar.xz instead of .tar.gz.
+  * Bump Standards-Version to 3.9.4 (no changes needed).
+
+ -- Theppitak Karoonboonyanan <thep@debian.org>  Tue, 29 Jan 2013 13:44:20 +0700
+
 libthai (0.1.18-2) unstable; urgency=low
 
   * Build with xz compression.

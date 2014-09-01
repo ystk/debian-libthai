@@ -7,19 +7,21 @@ Build-Depends:
  debhelper (>= 8.1.3),
  dh-autoreconf,
  dpkg-dev (>= 1.16.1~),
- libdatrie-dev (>= 0.2.0),
+ libdatrie-dev,
+ libdatrie1-bin,
  pkg-config
-Build-Depends-Indep: doxygen, libdatrie1-bin
-Standards-Version: 3.9.3
-Vcs-Git: git://git.debian.org/git/collab-maint/libthai.git
+Build-Depends-Indep: doxygen
+Standards-Version: 3.9.5
+Vcs-Git: git://anonscm.debian.org/collab-maint/libthai.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/libthai.git
 Homepage: http://linux.thai.net/projects/libthai
 
 Package: libthai-dev
 Section: libdevel
 Architecture: any
+Multi-Arch: same
 Depends:
- libdatrie-dev (>= 0.2.0),
+ libdatrie-dev,
  libthai0 (= ${binary:Version}),
  ${misc:Depends}
 Suggests: libthai-doc

@@ -22,39 +22,18 @@ build_flags += $(shell $(dpkg-buildflags) --export=configure)
 SHARED_PKG := libthai0
 SHLIB_VER := 0.1.12
 
-reconf: reconf-stamp
-reconf-stamp: configure.in
+config.status: configure.ac
 	dh_testdir
 
 	[ -d m4 ] || mkdir m4
 	dh_autoreconf
 
-	touch $@
-
-config-indep: config-indep-stamp
-config-indep-stamp: reconf
-	dh_testdir
-
-	rm -f config-arch-stamp
-
-	./configure --prefix=/usr --enable-dict
-
-	touch $@
-
-config-arch: config-arch-stamp
-config-arch-stamp: reconf
-	dh_testdir
-
-	rm -f config-indep-stamp
-
-	./configure --prefix=/usr --disable-dict \
+	./configure --prefix=/usr --enable-dict \
 	  --libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
 	  --enable-shared $(build_flags)
 
-	touch $@
-
 build-indep: build-indep-stamp
-build-indep-stamp:  config-indep
+build-indep-stamp: config.status
 	dh_testdir
 
 	$(MAKE) -C data
@@ -63,10 +42,14 @@ build-indep-stamp:  config-indep
 	touch $@
 
 build-arch: build-arch-stamp
-build-arch-stamp:  config-arch
+build-arch-stamp: config.status
 	dh_testdir
 
 	$(MAKE) -C src
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	$(MAKE) -C data
+	$(MAKE) -C tests check
+endif
 
 	touch $@
 
@@ -101,7 +84,7 @@ install-arch: build-arch
 	$(MAKE) install-am DESTDIR=$(CURDIR)/debian/tmp
 
 # Build architecture-independent files here.
-binary-indep: build-indep install-indep
+binary-indep: install-indep
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs -i ChangeLog
@@ -113,10 +96,10 @@ binary-indep: build-indep install-indep
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
-	dh_builddeb -i -- -Zxz
+	dh_builddeb -i
 
 # Build architecture-dependent files here.
-binary-arch: build-arch install-arch
+binary-arch: install-arch
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs -s ChangeLog
@@ -131,7 +114,7 @@ binary-arch: build-arch install-arch
 	dh_shlibdeps -s
 	dh_gencontrol -s
 	dh_md5sums -s
-	dh_builddeb -s -- -Zxz
+	dh_builddeb -s
 
 binary: binary-indep binary-arch
-.PHONY: reconf config-indep config-arch build build-indep build-arch clean binary-indep binary-arch binary
+.PHONY: build build-indep build-arch clean binary-indep binary-arch binary

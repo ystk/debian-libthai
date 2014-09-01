@@ -1,3 +1,412 @@
+2014-08-21  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	* configure.ac, NEWS:
+	=== Version 0.1.21 ===
+
+2014-08-19  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Be more careful about CFLAGS.
+
+	* src/Makefile.am:
+	  - Add $(DATRIE_CFLAGS) to CFLAGS so that thbrk/brk-common.h
+	    included from libthai.c can safely find datrie/trie.h header.
+
+2014-08-19  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Fix build failure due to missing header.
+
+	* src/Makefile.am:
+	  - Add CFLAGS so that thbrk/brk-common.h included from libthai.c
+	    can find thai/thctype.h header.
+
+2014-08-18  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+2014-08-09  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	thbrk: Be greedy when recovering from error.
+
+	* src/thbrk/brk-maximal.c (brk_recover_try):
+	  - Loop to match as many words as possible on every node picked
+	    from pool, to increase the chance of early sufficient words
+	    matched, and to avoid too much possibility exploration.
+
+2014-08-09  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Minor optimization.
+
+	Callgrind says brk_recover_try() is the most frequently called.
+	So, try to optimize it as we can.
+
+	* src/thbrk/brk-maximal.c (brk_recover, brk_recover_try):
+	  - Only return the last break position instead of all.
+	* src/thbrk/brk-maximal.c (brk_recover_try):
+	  - Remove unneeded assignment on is_terminal for the case in which
+	    its value is irrelevant.
+	  - Remove unneeded check on is_terminal where its value is known.
+
+2014-08-09  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	* src/thbrk/brk-maximal.c:
+	  - Add missing #include <limits.h>.
+
+2014-08-05  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Code clean up.
+
+	* src/thbrk/brk-maximal.c (brk_shot_init):
+	  - Split assignment and if-condition.
+	* src/thbrk/brk-maximal.c (brk_pool_free_node -> brk_pool_node_free):
+	  - Rename the function to obj-action form, in accordance with
+	    brk_pool_node_new().
+	  - Add forward declaration for it.
+
+2014-08-04  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Refactor common thbrk code into brk-common.
+
+	This prevents mutual dependency between brk-* and thbrk.
+
+	* src/thbrk/Makefile.am:
+	* src/thbrk/thbrk-private.h -> src/thbrk/brk-common.h:
+	  - Rename file, as thbrk-private.h contains only functions for
+	    common brk-* codes.
+	  - Rename thbrk_* functions back to brk_*.
+	* src/thbrk/Makefile.am:
+	* src/thbrk/thbrk.c:
+	* +src/thbrk/brk-common.c:
+	  - Move common thbrk_* functions implementations to brk-common.c.
+	  - Rename the functions according to changes in brk-common.h.
+	* src/thbrk/brk-maximal.c:
+	  - Update #include for thbrk-private.h to brk-common.h.
+	  - Update calls to thbrk_* to brk_*.
+	  - Remove #include's previously used by the common code.
+	* src/libthai.c (_libthai_on_unload):
+	  - Update #include for thbrk-private.h to brk-common.h.
+	  - Update call to thbrk_on_unload() to brk_on_unload().
+
+2014-08-03  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Move brk_get_dict() to common thbrk code.
+
+	* src/thbrk/brk-maximal.c, src/thbrk/thbrk-private.h:
+	  - Move brk_get_dict() declaration to thbrk-private.h.
+	  - Rename the function to thbrk_get_dict() for consistency.
+	* src/thbrk/brk-maximal.c, src/thbrk/thbrk.c:
+	  - Move implementation of brk_get_dict() to thbrk.c.
+	  - Rename function & variable accordingly.
+	* src/thbrk/brk-maximal.c (brk_root_pool):
+	  - Rename function call to thbrk_get_dict().
+	* src/thbrk/brk-maximal.h, src/thbrk/brk-maximal.c,
+	  src/thbrk/thbrk.c:
+	  - Move implementation of brk_maximal_on_unload() to
+	    thbrk_on_unload(). 
+	  - Remove brk_maximal_on_unload() which is no longer needed.
+
+2014-08-03  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Rename th_brkpos_hints() to thbrk_brkpos_hints().
+
+	* src/thbrk/thbrk-private.h, src/thbrk/thbrk.c,
+	  src/thbrk/brk-maximal.c:
+	  - Change function prefix for consistency.
+
+2014-08-03  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	Move th_brkpos_hints() to common thbrk code.
+
+	This is a preparation for alternative word break algorithms.
+	
+	* src/thbrk/brk-maximal.c, src/thbrk/thbrk-private.h:
+	  - Move declaration of th_brkpos_hints() to thbrk-private.h.
+	* src/thbrk/brk-maximal.c:
+	  - Include thbrk-private.h to get th_brkpos_hints() declaration.
+	* src/thbrk/brk-maximal.c, src/thbrk/thbrk.c:
+	  - Move implementation of th_brkpos_hints() to thbrk.c.
+
+2014-07-31  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-district.txt:
+	* data/tdict-lang-ethnic.txt: Add words.
+
+2014-06-30  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+
+	* data/tdict-common.txt:
+	* data/tdict-district.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+	* data/tdict-std.txt:
+	  - Remove rare word 'จอแส' which causes wrong segmentation for 'จอแสดงผล'
+	    as 'จอแส|ดง|ผล'.
+
+2014-03-06  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-district.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-spell.txt: Add words.
+
+	* data/tdict-common.txt:
+	  - Remove 'บ๊วย' which duplicates an entry in tdict-std.txt.
+	* data/tdict-proper.txt, data/tdict-district.txt:
+	  - Move 'กรือเซะ' from tdict-proper.txt to tdict-district.txt.
+	* data/tdict-proper.txt, data/tdict-geo.txt:
+	  - Move 'แอตแลนติส' from tdict-proper.txt to tdict-geo.txt.
+
+2014-01-11  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Fix warning in test suite.
+
+	* tests/test_thbrk.c (main):
+	  - Fix compiler warning on unused return value from fgets().
+	    Caught by debian package building with test suites enabled.
+
+2013-12-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-std-compound.txt, data/tdict-std.txt:
+	  - Move 'ชุติมา' from -std-compound to -std.
+
+2013-12-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+2013-12-21  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
+2013-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.ac, NEWS:
+	=== Version 0.1.20 ===
+
+2013-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Fix warnings in tests.
+
+	* tests/test_thwbrk.c (main):
+	  - Do some useful checks for 'unicodeCutCodeLength' unused var.
+	  - Cast (size_t) returned value of wcslen() to (long) and use "%ld"
+	    format to print it.
+	  - Remove trailing spaces in source.
+
+2013-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Fix warnings in tests.
+
+	* tests/test_thwchar.c (main):
+	  - Cast (thchar_t *) to (char *) to fix signedness differences.
+	  - Cast (thwchar_t) to (unsigned long) for "%lx" string format.
+	  - Cast (size_t) return values from wcslen() and strlen() to long,
+	    and use "%ld" format to print them.
+	  - Replace 'outputLength' var with 'tisLength' and 'uniLength'
+	    and do some useful checks on return values of th_tis2uni_line()
+	    and th_uni2tis_line().
+
+2013-10-25  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Fix warnings in tests.
+
+	* tests/test_thinp.c (test_th_validate):
+	  - Cast (thchar_t *) to (char *), to fix signedness differences.
+	* tests/thsort.c (readData):
+	  - Cast (size_t) to (long) and use "%ld" format to print it.
+	  - Redeclare maxData from int to size_t, to match that of nData.
+
+2013-10-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* README: Remove version-specific text.
+
+2013-10-22  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-history.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt:
+	* data/tdict-spell.txt: Add words.
+
+2013-09-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+2013-09-23  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Check for doxygen required version.
+
+	* configure.ac:
+	  - When doxygen-doc is enabled, also check doxygen version.
+
+2013-09-23  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Update Doxyfile.
+
+	* doc/Doxyfile.in:
+	  - Updated with 'doxygen -u'.
+
+2013-09-23  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Fix automake warnings.
+
+	* src/thbrk/Makefile.am:
+	* src/thcell/Makefile.am:
+	* src/thcoll/Makefile.am:
+	* src/thctype/Makefile.am:
+	* src/thinp/Makefile.am:
+	* src/thrend/Makefile.am:
+	* src/thstr/Makefile.am:
+	* src/thwbrk/Makefile.am:
+	* src/thwchar/Makefile.am:
+	* src/thwctype/Makefile.am:
+	* src/thwstr/Makefile.am:
+	* tests/Makefile.am:
+	  - Replace deprecated INCLUDES with AM_CPPFLAGS.
+
+2013-08-02  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-district.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt: Add words.
+
+	* data/tdict-std.txt: Remove 'พาส' whose use is rare and which
+	potentially causes ambiguity like in 'พาสมองเสื่อม'.
+
+2013-02-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-lang-ethnic.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+2013-02-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Remove compound words that potentially cause ambiguity.
+
+	* data/tdict-std-compound.txt:
+	  - Remove 'มีหน้า' which can cause 'มีหน้า|ที่' instead of 'มี|หน้าที่'.
+	  - Remove 'ลืมตา' which can cause 'ลืมตา|มหา' instead of 'ลืม|ตาม|หา'.
+
+2013-02-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
+2013-01-29  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.ac, NEWS:
+	=== Version 0.1.19 ===
+
+2013-01-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Modernize autoconf & switch to XZ tarball compression.
+
+	* configure.in -> configure.ac:
+	  - Rename file for modern autoconf.
+	  - Replace deprecated AC_INIT() form with PACKAGE, VERSION form.
+	  - Use AC_CONFIG_SRCDIR() instead for the old AC_INIT() form.
+	  - Add AC_CONFIG_MACRO_DIR().
+	  - Replace deprecated AC_INIT_AUTOMAKE() form with OPTIONS form,
+	    passing "dist-xz no-dist-gzip" options to switch to XZ tarball.
+
+	* Makefile.am:
+	  - Add "-I m4" to ACLOCAL_AMFLAGS, as suggested by libtool.
+
+2013-01-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Change th_validate() default level back to ISC_STRICT.
+
+	* src/thinp/thinp.c (th_validate):
+	  - Change ISC level back from ISC_BASICCHECK to ISC_STRICT.
+	    ISC_BASICCHECK fails 'make check', and the previous value
+	    ISC_STRICT should be better for general input with correction.
+
+2013-01-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-science.txt: Fix typo.
+
+2013-01-27  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-science.txt:
+	* data/tdict-geo.txt:
+	* data/tdict-lang-ethnic.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-city.txt:
+	* data/tdict-district.txt: Add words.
+
+	* data/tdict-std-compound.txt: Drop loose compound 'สว่างไสว'.
+
+2012-11-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Add input method API for correction with levels.
+
+	* include/thai/thinp.h:
+	* src/libthai.def:
+	* src/libthai.map (+th_validate_leveled):
+	  - Add API for input validation with strictness arg.
+	* src/thinp/thinp.c (th_validate, th_validate_leveled):
+	  - Convert old th_validate() code to th_validate_leveled() and replace
+	    the hard-coded ISC_STRICT with the arg.
+	  - Make the old th_validate() a wrapper to th_validate_leveled() with
+	    default param (ISC_BASICCHECK, not ISC_STRICT, though).
+	* configure.in:
+	  - Bump library versions to reflect the added API.
+
+2012-11-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-science.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-lang-ethnic.txt: Add words.
+
+2012-10-16  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-common.txt:
+	* data/tdict-district.txt:
+	* data/tdict-ict.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt: Add words.
+
+2012-07-30  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* doc/Doxyfile.in: Upgrade to doxygen 1.8.1.2 format.
+
+2012-07-29  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* data/tdict-city.txt:
+	* data/tdict-common.txt:
+	* data/tdict-proper.txt:
+	* data/tdict-science.txt:
+	* data/tdict-spell.txt: Add words.
+
+2012-07-30  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* doc/Doxyfile.in: Upgrade to doxygen 1.8.1.2 format.
+
+2012-06-15  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* configure.in: Post-release version suffix added.
+
 2012-06-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* configure.in, NEWS:

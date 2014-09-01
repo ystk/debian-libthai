@@ -73,3 +73,5 @@ libthai.so.0 libthai0 #MINVER#
  th_wcisupvowel@LIBTHAI_0.1 0.1.12
  th_winthai2uni@LIBTHAI_0.1 0.1.12
  th_wnormalize@LIBTHAI_0.1 0.1.12
+ LIBTHAI_0.1.19@LIBTHAI_0.1.19 0.1.19
+ th_validate_leveled@LIBTHAI_0.1.19 0.1.19
